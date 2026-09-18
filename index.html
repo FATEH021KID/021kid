@@ -49,11 +49,58 @@ h1{
     margin:4px;
     min-width:120px;
 }
+#menu{
+    position:fixed;
+    top:15px;
+    right:15px;
+    z-index:9999;
+}
+
+#menuBtn{
+    width:45px;
+    height:45px;
+    border:0;
+    border-radius:14px;
+    background:rgba(20,20,20,.85);
+    color:white;
+    font-size:24px;
+}
+
+#menuPanel{
+    display:none;
+    position:absolute;
+    top:52px;
+    right:0;
+    width:190px;
+    padding:10px;
+    background:rgba(25,25,25,.95);
+    border-radius:15px;
+}
+
+#menuPanel.show{
+    display:block;
+}
+
+#menuPanel a{
+    display:block;
+    color:white;
+    text-decoration:none;
+    padding:12px;
+}
+
 </style>
 
 </head>
 
 <body>
+
+<div id="menu">
+    <button id="menuBtn">☰</button>
+    <div id="menuPanel">
+        <a href="#map">نقشه</a>
+        <a href="#forecast7">پیش‌بینی ۷ روزه</a>
+    </div>
+</div>
 
 <h1>🌤️ نقشه آب‌وهوای فارس</h1>
 
@@ -63,7 +110,13 @@ h1{
 📍 روی هر نقطه از نقشه کلیک کنید
 </div>
 
-<script src="lib/leaflet.js"></script>
+<script src="lib/leaflet.js">const menuBtn = document.getElementById("menuBtn");
+const menuPanel = document.getElementById("menuPanel");
+
+menuBtn.addEventListener("click", () => {
+    menuPanel.classList.toggle("show");
+});
+</script>
 
 <script>
 
