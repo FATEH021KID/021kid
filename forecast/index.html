@@ -1,457 +1,200 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پیش‌بینی ۷ روزه | آب‌وهوای بین‌المللی</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>پیش‌بینی ۷ روزه | آب‌وهوای بین‌المللی</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+*{box-sizing:border-box}
 
-        body {
-            font-family: Tahoma, sans-serif;
-            background:
-                radial-gradient(circle at top, #173b5c 0%, #08121d 45%, #03070b 100%);
-            color: #fff;
-            min-height: 100vh;
-            padding: 20px;
-        }
+body{
+margin:0;
+padding:20px;
+background:#081018;
+color:#fff;
+font-family:Tahoma,Arial,sans-serif;
+}
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
-        }
+h1{
+text-align:center;
+margin:10px 0 5px;
+}
 
-        header {
-            text-align: center;
-            padding: 25px 10px 35px;
-        }
+.sub{
+text-align:center;
+color:#9aa8b5;
+margin-bottom:25px;
+}
 
-        header h1 {
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
+#forecast{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:15px;
+max-width:1100px;
+margin:auto;
+}
 
-        header p {
-            color: #aebdca;
-            font-size: 14px;
-        }
+.card{
+background:#151f29;
+border:1px solid #293746;
+border-radius:20px;
+padding:18px;
+box-shadow:0 8px 25px #0008;
+}
 
-        .forecast {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 16px;
-        }
+.card h2{
+margin:0 0 5px;
+}
 
-        .day {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 20px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 30px rgba(0,0,0,.25);
-            transition: .25s;
-        }
+.date{
+color:#8999a8;
+font-size:13px;
+}
 
-        .day:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.12);
-        }
+.icon{
+font-size:42px;
+margin:12px 0;
+}
 
-        .day-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
+.temp{
+font-size:27px;
+font-weight:bold;
+margin-bottom:15px;
+}
 
-        .day-title h2 {
-            font-size: 20px;
-        }
+.temp span{
+font-size:16px;
+color:#8fa0af;
+}
 
-        .date {
-            color: #9fb4c7;
-            font-size: 13px;
-        }
+.info{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
 
-        .weather-icon {
-            font-size: 48px;
-            margin: 10px 0;
-        }
+.info div{
+background:#0e161e;
+padding:10px;
+border-radius:10px;
+font-size:13px;
+}
 
-        .temperature {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 18px;
-        }
-
-        .temperature span {
-            color: #9fb4c7;
-            font-size: 18px;
-            font-weight: normal;
-        }
-
-        .info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .info-box {
-            background: rgba(0,0,0,.18);
-            padding: 10px;
-            border-radius: 12px;
-        }
-
-        .info-box small {
-            display: block;
-            color: #91a5b5;
-            margin-bottom: 5px;
-        }
-
-        .info-box strong {
-            font-size: 14px;
-        }
-
-        footer {
-            text-align: center;
-            color: #718494;
-            margin-top: 35px;
-            font-size: 12px;
-        }
-
-        @media (max-width: 500px) {
-            body {
-                padding: 12px;
-            }
-
-            header h1 {
-                font-size: 24px;
-            }
-
-            .forecast {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+.info small{
+display:block;
+color:#7f91a0;
+margin-bottom:5px;
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<h1>🌤️ پیش‌بینی ۷ روز آینده</h1>
 
-    <header>
-        <h1>پیش‌بینی ۷ روز آینده</h1>
-        <p>آب‌وهوای بین‌المللی</p>
-    </header>
-
-    <main class="forecast">
-
-        <div class="day">
-            <div class="day-title">
-                <h2>شنبه</h2>
-                <span class="date">۲۸ شهریور</span>
-            </div>
-
-            <div class="weather-icon">☀️</div>
-            <div class="temperature">۳۴° <span>/ ۲۲°</span></div>
-
-            <div class="info">
-                <div class="info-box">
-                    <small>وضعیت</small>
-                    <strong>آفتابی</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>احتمال بارش</small>
-                    <strong>۱۰٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>رطوبت</small>
-                    <strong>۳۵٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>باد</small>
-                    <strong>۱۴ km/h</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>شاخص UV</small>
-                    <strong>۷</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>طلوع / غروب</small>
-                    <strong>۰۵:۴۸ / ۱۸:۰۵</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="day">
-            <div class="day-title">
-                <h2>یکشنبه</h2>
-                <span class="date">۲۹ شهریور</span>
-            </div>
-
-            <div class="weather-icon">⛅</div>
-            <div class="temperature">۳۳° <span>/ ۲۱°</span></div>
-
-            <div class="info">
-                <div class="info-box">
-                    <small>وضعیت</small>
-                    <strong>نیمه‌ابری</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>احتمال بارش</small>
-                    <strong>۱۵٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>رطوبت</small>
-                    <strong>۴۰٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>باد</small>
-                    <strong>۱۷ km/h</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>شاخص UV</small>
-                    <strong>۶</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>طلوع / غروب</small>
-                    <strong>۰۵:۴۹ / ۱۸:۰۴</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="day">
-            <div class="day-title">
-                <h2>دوشنبه</h2>
-                <span class="date">۳۰ شهریور</span>
-            </div>
-
-            <div class="weather-icon">🌤️</div>
-            <div class="temperature">۳۲° <span>/ ۲۰°</span></div>
-
-            <div class="info">
-                <div class="info-box">
-                    <small>وضعیت</small>
-                    <strong>صاف تا نیمه‌ابری</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>احتمال بارش</small>
-                    <strong>۲۰٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>رطوبت</small>
-                    <strong>۴۲٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>باد</small>
-                    <strong>۱۵ km/h</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>شاخص UV</small>
-                    <strong>۶</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>طلوع / غروب</small>
-                    <strong>۰۵:۵۰ / ۱۸:۰۳</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="day">
-            <div class="day-title">
-                <h2>سه‌شنبه</h2>
-                <span class="date">۳۱ شهریور</span>
-            </div>
-
-            <div class="weather-icon">🌥️</div>
-            <div class="temperature">۳۱° <span>/ ۲۰°</span></div>
-
-            <div class="info">
-                <div class="info-box">
-                    <small>وضعیت</small>
-                    <strong>ابری</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>احتمال بارش</small>
-                    <strong>۳۰٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>رطوبت</small>
-                    <strong>۴۸٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>باد</small>
-                    <strong>۱۸ km/h</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>شاخص UV</small>
-                    <strong>۵</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>طلوع / غروب</small>
-                    <strong>۰۵:۵۱ / ۱۸:۰۲</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="day">
-            <div class="day-title">
-                <h2>چهارشنبه</h2>
-                <span class="date">۱ مهر</span>
-            </div>
-
-            <div class="weather-icon">🌦️</div>
-            <div class="temperature">۳۰° <span>/ ۱۹°</span></div>
-
-            <div class="info">
-                <div class="info-box">
-                    <small>وضعیت</small>
-                    <strong>احتمال بارش</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>احتمال بارش</small>
-                    <strong>۴۰٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>رطوبت</small>
-                    <strong>۵۵٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>باد</small>
-                    <strong>۲۰ km/h</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>شاخص UV</small>
-                    <strong>۴</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>طلوع / غروب</small>
-                    <strong>۰۵:۵۲ / ۱۸:۰۱</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="day">
-            <div class="day-title">
-                <h2>پنجشنبه</h2>
-                <span class="date">۲ مهر</span>
-            </div>
-
-            <div class="weather-icon">🌧️</div>
-            <div class="temperature">۲۹° <span>/ ۱۸°</span></div>
-
-            <div class="info">
-                <div class="info-box">
-                    <small>وضعیت</small>
-                    <strong>بارانی</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>احتمال بارش</small>
-                    <strong>۶۰٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>رطوبت</small>
-                    <strong>۶۲٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>باد</small>
-                    <strong>۲۲ km/h</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>شاخص UV</small>
-                    <strong>۳</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>طلوع / غروب</small>
-                    <strong>۰۵:۵۳ / ۱۸:۰۰</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="day">
-            <div class="day-title">
-                <h2>جمعه</h2>
-                <span class="date">۳ مهر</span>
-            </div>
-
-            <div class="weather-icon">🌤️</div>
-            <div class="temperature">۳۰° <span>/ ۱۹°</span></div>
-
-            <div class="info">
-                <div class="info-box">
-                    <small>وضعیت</small>
-                    <strong>نیمه‌ابری</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>احتمال بارش</small>
-                    <strong>۲۵٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>رطوبت</small>
-                    <strong>۵۰٪</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>باد</small>
-                    <strong>۱۶ km/h</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>شاخص UV</small>
-                    <strong>۵</strong>
-                </div>
-
-                <div class="info-box">
-                    <small>طلوع / غروب</small>
-                    <strong>۰۵:۵۴ / ۱۷:۵۹</strong>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <footer>
-        آب‌وهوای بین‌المللی — پیش‌بینی ۷ روز آینده
-    </footer>
-
+<div class="sub">
+آب‌وهوای بین‌المللی
 </div>
+
+<div id="forecast"></div>
+
+<script>
+
+const box = document.getElementById("forecast");
+
+const days = [
+"شنبه",
+"یکشنبه",
+"دوشنبه",
+"سه‌شنبه",
+"چهارشنبه",
+"پنجشنبه",
+"جمعه"
+];
+
+for(let i = 0; i < 7; i++){
+
+    const d = new Date();
+
+    d.setDate(d.getDate() + i + 1);
+
+    const date = new Intl.DateTimeFormat(
+        "fa-IR-u-ca-persian",
+        {
+            day:"numeric",
+            month:"long"
+        }
+    ).format(d);
+
+    box.innerHTML += `
+
+    <div class="card">
+
+        <h2>${days[i]}</h2>
+
+        <div class="date">
+            ${date}
+        </div>
+
+        <div class="icon">
+            🌤️
+        </div>
+
+        <div class="temp">
+            --° <span>/ --°</span>
+        </div>
+
+        <div class="info">
+
+            <div>
+                <small>وضعیت</small>
+                --
+            </div>
+
+            <div>
+                <small>احتمال بارش</small>
+                --٪
+            </div>
+
+            <div>
+                <small>رطوبت</small>
+                --٪
+            </div>
+
+            <div>
+                <small>سرعت باد</small>
+                -- km/h
+            </div>
+
+            <div>
+                <small>جهت باد</small>
+                --
+            </div>
+
+            <div>
+                <small>شاخص UV</small>
+                --
+            </div>
+
+            <div>
+                <small>طلوع</small>
+                --
+            </div>
+
+            <div>
+                <small>غروب</small>
+                --
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
+}
+
+</script>
 
 </body>
 </html>
