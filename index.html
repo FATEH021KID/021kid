@@ -2,76 +2,102 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>آب‌وهوای بین‌المللی</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#02040a;color:#fff;font-family:Tahoma,Arial,sans-serif}
-#globe{position:fixed;inset:0;width:100%;height:100%}
-#globe canvas{display:block;width:100%;height:100%}
-#top{position:fixed;top:0;left:0;right:0;z-index:10;padding:12px;pointer-events:none}
-#datebar{margin:auto;max-width:650px;padding:10px 14px;border:1px solid #ffffff20;border-radius:16px;background:linear-gradient(135deg,#07111dcc,#111827cc);backdrop-filter:blur(12px);text-align:center;box-shadow:0 8px 30px #0008}
-#persian{font-size:15px;font-weight:bold}
-#clock{font-size:23px;margin-top:3px;letter-spacing:1px}
-#gregorian{font-size:11px;color:#aab4c5;margin-top:2px;direction:ltr}
-#menu{position:fixed;top:14px;right:14px;z-index:20;direction:rtl}
-#menuBtn{width:46px;height:46px;border:1px solid #ffffff30;border-radius:14px;background:#07111dcc;color:#fff;font-size:24px;cursor:pointer;backdrop-filter:blur(12px)}
-#menuPanel{display:none;margin-top:8px;min-width:175px;padding:7px;border:1px solid #ffffff20;border-radius:14px;background:#07111df2;box-shadow:0 10px 30px #0009}
-#menuPanel.show{display:block}
-#menuPanel a{display:block;color:#fff;text-decoration:none;padding:11px 13px;border-radius:10px}
-#menuPanel a:hover{background:#ffffff12}
-#title{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:10;padding:9px 15px;border:1px solid #ffffff20;border-radius:14px;background:#07111dcc;backdrop-filter:blur(10px);font-size:13px;white-space:nowrap}
-#hint{position:fixed;bottom:20px;right:18px;z-index:10;color:#b8c2d1;font-size:11px;background:#07111dbb;padding:8px 10px;border-radius:10px}
-@media(max-width:600px){
-#datebar{max-width:calc(100vw - 90px)}
-#hint{display:none}
-#title{bottom:18px}
-}
+html,body{margin:0;width:100%;height:100%;background:#081018;font-family:Tahoma,Arial,sans-serif}
+#map{position:absolute;inset:0}
+#title{position:absolute;z-index:1000;top:15px;left:15px;background:#101820dd;color:white;padding:12px 18px;border-radius:14px;font-size:18px;font-weight:bold;box-shadow:0 5px 20px #0008}
+#menu{position:absolute;z-index:1001;top:15px;right:15px}
+#menuBtn{border:0;background:#101820ee;color:white;font-size:24px;width:48px;height:48px;border-radius:14px}
+#menuPanel{display:none;margin-top:8px;background:#101820f2;border-radius:14px;overflow:hidden;min-width:180px;box-shadow:0 8px 25px #0009}
+#menuPanel a{display:block;color:white;text-decoration:none;padding:14px 18px;border-bottom:1px solid #293746}
+#menuPanel a:last-child{border:0}
+#dateBar{position:absolute;z-index:1000;bottom:15px;left:15px;right:15px;background:#101820e8;color:white;border:1px solid #293746;border-radius:16px;padding:10px;text-align:center;box-shadow:0 5px 20px #0008}
+#search{position:absolute;z-index:1000;top:75px;left:15px;display:flex;gap:6px;width:min(400px,calc(100% - 80px))}
+#search input{flex:1;padding:12px;border:1px solid #394957;border-radius:12px;background:#101820ee;color:white}
+#search button{border:0;border-radius:12px;padding:12px;background:#247cff;color:white}
 </style>
 </head>
 <body>
-<div id="globe"></div>
 
-<div id="top">
-<div id="datebar">
-<div id="persian">در حال دریافت تاریخ...</div>
-<div id="clock">--:--:--</div>
-<div id="gregorian">Loading...</div>
-</div>
+<div id="map"></div>
+<div id="title">🌍 آب‌وهوای بین‌المللی</div>
+
+<div id="search">
+<input id="city" placeholder="جستجوی شهر...">
+<button onclick="searchCity()">جستجو</button>
 </div>
 
 <div id="menu">
 <button id="menuBtn">☰</button>
 <div id="menuPanel">
-<a href="#globe">🌍 کره زمین</a>
-<a href="forecast/">🌦️ پیش‌بینی ۷ روزه</a>
+<a href="#map">🗺️ نقشه جهان</a>
+<a href="forecast/">🌤️ پیش‌بینی ۷ روزه</a>
 </div>
 </div>
 
-<div id="title">🌍 آب‌وهوای بین‌المللی</div>
-<div id="hint">لمس و کشیدن = چرخش | دو انگشت = زوم</div>
+<div id="dateBar">
+<div id="persianDate"></div>
+<div id="clock"></div>
+<div id="gregorianDate"></div>
+</div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const menuBtn=document.getElementById("menuBtn");
-const menuPanel=document.getElementById("menuPanel");
-menuBtn.addEventListener("click",()=>menuPanel.classList.toggle("show"));
+const map=L.map("map",{worldCopyJump:true,zoomControl:true}).setView([32,53],5);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+maxZoom:19,
+attribution:"© OpenStreetMap contributors"
+}).addTo(map);
+
+let marker;
+
+function searchCity(){
+const name=document.getElementById("city").value.trim();
+if(!name)return;
+
+fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(name)+"&count=1&language=fa&format=json")
+.then(r=>r.json())
+.then(data=>{
+if(!data.results||!data.results.length){
+alert("شهر پیدا نشد");
+return;
+}
+const p=data.results[0];
+map.setView([p.latitude,p.longitude],10);
+
+if(marker)map.removeLayer(marker);
+marker=L.marker([p.latitude,p.longitude]).addTo(map)
+.bindPopup("<b>"+p.name+"</b><br>"+(p.country||""))
+.openPopup();
+})
+.catch(()=>alert("خطا در جستجوی شهر"));
+}
+
+document.getElementById("city").addEventListener("keydown",e=>{
+if(e.key==="Enter")searchCity();
+});
+
+document.getElementById("menuBtn").onclick=()=>{
+const panel=document.getElementById("menuPanel");
+panel.style.display=panel.style.display==="block"?"none":"block";
+};
 
 function updateDate(){
 const now=new Date();
-const fa=new Intl.DateTimeFormat("fa-IR",{weekday:"long",year:"numeric",month:"long",day:"numeric"}).format(now);
-const time=new Intl.DateTimeFormat("fa-IR",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(now);
-const gr=new Intl.DateTimeFormat("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}).format(now);
-document.getElementById("persian").textContent=fa;
-document.getElementById("clock").textContent=time;
-document.getElementById("gregorian").textContent=gr;
+document.getElementById("persianDate").textContent=
+new Intl.DateTimeFormat("fa-IR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(now);
+document.getElementById("clock").textContent=
+"🕐 "+now.toLocaleTimeString("fa-IR");
+document.getElementById("gregorianDate").textContent=
+new Intl.DateTimeFormat("en-US",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(now);
 }
 updateDate();
 setInterval(updateDate,1000);
 </script>
-
-<script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"}}
-</script>
-<script type="module" src="lib/globe/globe.js"></script>
 </body>
 </html>
