@@ -123,7 +123,11 @@ async function loadForecast(){
    const status=weatherText(code);
    const sunrise=new Date(w.sunrise[i]).toLocaleTimeString("fa-IR",{hour:"2-digit",minute:"2-digit"});
    const sunset=new Date(w.sunset[i]).toLocaleTimeString("fa-IR",{hour:"2-digit",minute:"2-digit"});
-   box.innerHTML+=`<div class="card"><h2>${days[i]}</h2><div class="date">${date}</div><div class="icon">${status.split(" ")[0]}</div><div class="temp">${Math.round(w.temperature_2m_max[i])}° <span>/ ${Math.round(w.temperature_2m_min[i])}°</span></div><div class="info"><div><small>وضعیت</small>${status}</div><div><small>احتمال بارش</small>${w.precipitation_probability_max[i]??"--"}٪</div><div><small>رطوبت</small>${Math.round(w.relative_humidity_2m_mean[i])}٪</div><div><small>سرعت باد</small>${Math.round(w.wind_speed_10m_max[i])} km/h</div><div><small>جهت باد</small>${direction(w.wind_direction_10m_dominant[i])}</div><div><small>شاخص UV</small>${Math.round(w.uv_index_max[i]*10)/10}</div><div><small>طلوع</small>${sunrise}</div><div><small>غروب</small>${sunset}</div></div></div>`;
+   const d=new Date(w.time[i]+"T12:00:00");
+   const date=new Intl.DateTimeFormat("fa-IR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(d);
+   const sunrise=w.sunrise[i].slice(11,16);
+   const sunset=w.sunset[i].slice(11,16);
+   box.innerHTML+=`<div class="card"><h2>${date}</h2><div class="date">📅 ${w.time[i]}</div><div class="icon">${status.split(" ")[0]}</div><div class="temp">${Math.round(w.temperature_2m_max[i])}° <span>/ ${Math.round(w.temperature_2m_min[i])}°</span></div><div class="info"><div><small>وضعیت</small>${status}</div><div><small>احتمال بارش</small>${w.precipitation_probability_max[i]??"--"}٪</div><div><small>رطوبت</small>${Math.round(w.relative_humidity_2m_mean[i])}٪</div><div><small>سرعت باد</small>${Math.round(w.wind_speed_10m_max[i])} km/h</div><div><small>جهت باد</small>${direction(w.wind_direction_10m_dominant[i])}</div><div><small>شاخص UV</small>${Math.round(w.uv_index_max[i]*10)/10}</div><div><small>طلوع</small>${sunrise}</div><div><small>غروب</small>${sunset}</div></div></div>`;
   }
  }catch(e){
   box.innerHTML=`<div style="text-align:center;padding:40px">❌ ${e.message}</div>`;
