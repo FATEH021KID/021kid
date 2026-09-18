@@ -100,100 +100,43 @@ margin-bottom:5px;
 <div id="forecast"></div>
 
 <script>
+const box=document.getElementById("forecast");
+const lat=29.6,lon=52.5;
+const days=["شنبه","یکشنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنجشنبه","جمعه"];
 
-const box = document.getElementById("forecast");
-
-const days = [
-"شنبه",
-"یکشنبه",
-"دوشنبه",
-"سه‌شنبه",
-"چهارشنبه",
-"پنجشنبه",
-"جمعه"
-];
-
-for(let i = 0; i < 7; i++){
-
-    const d = new Date();
-
-    d.setDate(d.getDate() + i + 1);
-
-    const date = new Intl.DateTimeFormat(
-        "fa-IR-u-ca-persian",
-        {
-            day:"numeric",
-            month:"long"
-        }
-    ).format(d);
-
-    box.innerHTML += `
-
-    <div class="card">
-
-        <h2>${days[i]}</h2>
-
-        <div class="date">
-            ${date}
-        </div>
-
-        <div class="icon">
-            🌤️
-        </div>
-
-        <div class="temp">
-            --° <span>/ --°</span>
-        </div>
-
-        <div class="info">
-
-            <div>
-                <small>وضعیت</small>
-                --
-            </div>
-
-            <div>
-                <small>احتمال بارش</small>
-                --٪
-            </div>
-
-            <div>
-                <small>رطوبت</small>
-                --٪
-            </div>
-
-            <div>
-                <small>سرعت باد</small>
-                -- km/h
-            </div>
-
-            <div>
-                <small>جهت باد</small>
-                --
-            </div>
-
-            <div>
-                <small>شاخص UV</small>
-                --
-            </div>
-
-            <div>
-                <small>طلوع</small>
-                --
-            </div>
-
-            <div>
-                <small>غروب</small>
-                --
-            </div>
-
-        </div>
-
-    </div>
-
-    `;
+function direction(deg){
+ const d=["شمال","شمال‌شرق","شرق","جنوب‌شرق","جنوب","جنوب‌غرب","غرب","شمال‌غرب"];
+ return d[Math.round(deg/45)%8];
 }
 
+async function loadForecast(){
+ box.innerHTML="<div style="text-align:center;padding:40px">⏳ در حال دریافت اطلاعات واقعی هواشناسی...</div>";
+ try{
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,relative_humidity_2m_mean,wind_speed_10m_max,wind_direction_10m_dominant,uv_index_max,sunrise,sunset&timezone=auto&forecast_days=7`;
+  const r=await fetch(url);
+  if(!r.ok) throw new Error("خطا در دریافت اطلاعات");
+  const x=await r.json();
+  const w=x.daily;
+  box.innerHTML="";
+  for(let i=0;i<7;i++){
+   const d=new Date(w.time[i]+"T12:00:00");
+   const date=new Intl.DateTimeFormat("fa-IR-u-ca-persian",{day:"numeric",month:"long"}).format(d);
+   const code=w.weather_code[i];
+   const status=weatherText(code);
+   const sunrise=new Date(w.sunrise[i]).toLocaleTimeString("fa-IR",{hour:"2-digit",minute:"2-digit"});
+   const sunset=new Date(w.sunset[i]).toLocaleTimeString("fa-IR",{hour:"2-digit",minute:"2-digit"});
+   box.innerHTML+=`<div class="card"><h2>${days[i]}</h2><div class="date">${date}</div><div class="icon">${status.split(" ")[0]}</div><div class="temp">${Math.round(w.temperature_2m_max[i])}° <span>/ ${Math.round(w.temperature_2m_min[i])}°</span></div><div class="info"><div><small>وضعیت</small>${status}</div><div><small>احتمال بارش</small>${w.precipitation_probability_max[i]??"--"}٪</div><div><small>رطوبت</small>${Math.round(w.relative_humidity_2m_mean[i])}٪</div><div><small>سرعت باد</small>${Math.round(w.wind_speed_10m_max[i])} km/h</div><div><small>جهت باد</small>${direction(w.wind_direction_10m_dominant[i])}</div><div><small>شاخص UV</small>${Math.round(w.uv_index_max[i]*10)/10}</div><div><small>طلوع</small>${sunrise}</div><div><small>غروب</small>${sunset}</div></div></div>`;
+  }
+ }catch(e){
+  box.innerHTML=`<div style="text-align:center;padding:40px">❌ ${e.message}</div>`;
+ }
+}
+
+function weatherText(code){
+ const list={0:"☀️ صاف",1:"🌤️ عمدتاً صاف",2:"⛅ کمی ابری",3:"☁️ ابری",45:"🌫️ مه",48:"🌫️ مه یخ‌زن",51:"🌦️ نم‌نم باران",53:"🌦️ بارش خفیف",55:"🌧️ بارش",61:"🌧️ باران",63:"🌧️ باران متوسط",65:"🌧️ باران شدید",71:"🌨️ برف",73:"🌨️ برف متوسط",75:"❄️ برف شدید",80:"🌦️ رگبار",81:"🌦️ رگبار متوسط",82:"⛈️ رگبار شدید",95:"⛈️ رعدوبرق",96:"⛈️ رعدوبرق و تگرگ",99:"⛈️ رعدوبرق و تگرگ شدید"};
+ return list[code]||"🌤️ نامشخص";
+}
+loadForecast();
 </script>
 
 </body>
