@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>نقشه آب‌وهوای فارس</title>
+
+<link rel="stylesheet" href="lib/leaflet.css">
+
+<style>
+html,body{
+    margin:0;
+    padding:0;
+    background:#111;
+    color:white;
+    font-family:tahoma,Arial;
+}
+
+h1{
+    text-align:center;
+    padding:12px;
+    margin:0;
+}
+
+#map{
+    width:100%;
+    height:65vh;
+}
+
+#info{
+    padding:18px;
+    text-align:center;
+    background:#181818;
+    line-height:2;
+}
+
+.box{
+    max-width:700px;
+    margin:auto;
+}
+
+.card{
+    display:inline-block;
+    background:#242424;
+    border-radius:12px;
+    padding:12px;
+    margin:4px;
+    min-width:120px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🌤️ نقشه آب‌وهوای فارس</h1>
+
+<div id="map"></div>
+
+<div id="info">
+📍 روی هر نقطه از نقشه کلیک کنید
+</div>
+
+<script src="lib/leaflet.js"></script>
+
+<script>
+
+const info = document.getElementById("info");
+
+const map = L.map("map").setView(
+    [29.6,52.5],
+    8
+);
+
+L.tileLayer(
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        maxZoom:19,
+        attribution:"© OpenStreetMap contributors"
+    }
+).addTo(map);
+
+let marker = null;
+
+
+/* کلیک روی هر نقطه */
+
+map.on("click", async function(e){
+
+    const lat = e.latlng.lat;
+    const lon = e.latlng.lng;
+
+    if(marker){
+        map.removeLayer(marker);
+    }
+
+    marker = L.circleMarker(
+        [lat,lon],
+        {
+            radius:8,
+            weight:3
+        }
+    ).addTo(map);
+
+    info.innerHTML =
+        "⏳ در حال دریافت آب‌وهوا...";
+
+    try{
+
+        const url =
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=" + lat +
+        "&longitude=" + lon +
+        "&current=" +
+        "temperature_2m," +
+        "relative_humidity_2m," +
+        "precipitation," +
+        "weather_code," +
+        "wind_speed_10m," +
+        "wind_gusts_10m," +
+        "visibility," +
+        "cloud_cover" +
+        "&timezone=auto";
+
+        const response =
+            await fetch(url);
+
+        if(!response.ok){
+            throw new Error(
+                "خطای سرور: " + response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        if(!data.current){
+            throw new Error(
+                "اطلاعات آب‌وهوا پیدا نشد"
+            );
+        }
+
+        const w =
+            data.current;
+
+        const weather =
+            weatherText(w.weather_code);
+
+        info.innerHTML = `
+
+        <div class="box">
+
+            📍 موقعیت انتخاب‌شده
+
+            <br>
+
+            <small>
+            ${lat.toFixed(5)}
+            ،
+            ${lon.toFixed(5)}
+            </small>
+
+            <br><br>
+
+            <div class="card">
+                🌡️ دما
+                <br>
+                <b>${w.temperature_2m} °C</b>
+            </div>
+
+            <div class="card">
+                ☁️ وضعیت
+                <br>
+                <b>${weather}</b>
+            </div>
+
+            <div class="card">
+                💧 رطوبت
+                <br>
+                <b>${w.relative_humidity_2m}٪</b>
+            </div>
+
+            <div class="card">
+                🌧️ بارش
+                <br>
+                <b>${w.precipitation} mm</b>
+            </div>
+
+            <div class="card">
+                💨 باد
+                <br>
+                <b>${w.wind_speed_10m} km/h</b>
+            </div>
+
+            <div class="card">
+                🌪️ تندباد
+                <br>
+                <b>${w.wind_gusts_10m} km/h</b>
+            </div>
+
+            <div class="card">
+                👁️ دید
+                <br>
+                <b>${visibility(w.visibility)}</b>
+            </div>
+
+            <div class="card">
+                ☁️ ابر
+                <br>
+                <b>${w.cloud_cover}٪</b>
+            </div>
+
+        </div>
+        `;
+
+        marker.bindPopup(`
+            🌤️ ${weather}
+            <br>
+            🌡️ ${w.temperature_2m} °C
+            <br>
+            💧 ${w.relative_humidity_2m}٪
+            <br>
+            💨 ${w.wind_speed_10m} km/h
+        `).openPopup();
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        info.innerHTML =
+            "❌ " + error.message;
+
+    }
+
+});
+
+
+function weatherText(code){
+
+    const list = {
+
+        0:"☀️ صاف",
+        1:"🌤️ عمدتاً صاف",
+        2:"⛅ کمی ابری",
+        3:"☁️ ابری",
+        45:"🌫️ مه",
+        48:"🌫️ مه یخ‌زن",
+        51:"🌦️ نم‌نم باران",
+        53:"🌦️ بارش خفیف",
+        55:"🌧️ بارش",
+        61:"🌧️ باران",
+        63:"🌧️ باران متوسط",
+        65:"🌧️ باران شدید",
+        71:"🌨️ برف",
+        73:"🌨️ برف متوسط",
+        75:"❄️ برف شدید",
+        80:"🌦️ رگبار",
+        81:"🌦️ رگبار متوسط",
+        82:"⛈️ رگبار شدید",
+        95:"⛈️ رعدوبرق",
+        96:"⛈️ رعدوبرق و تگرگ",
+        99:"⛈️ رعدوبرق و تگرگ شدید"
+
+    };
+
+    return list[code] || "🌤️ نامشخص";
+}
+
+
+function visibility(meters){
+
+    if(!meters){
+        return "نامشخص";
+    }
+
+    if(meters >= 1000){
+        return (meters/1000).toFixed(1) + " km";
+    }
+
+    return Math.round(meters) + " متر";
+}
+
+</script>
+
+</body>
+</html>
